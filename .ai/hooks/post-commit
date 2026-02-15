@@ -1,0 +1,71 @@
+#!/bin/bash
+# Post-commit hook to log commits to development log
+
+set -e
+
+# Get commit information
+COMMIT_HASH=$(git rev-parse HEAD)
+COMMIT_MSG=$(git log -1 --pretty=%B)
+COMMIT_TYPE=$(echo "$COMMIT_MSG" | sed -E 's/^([a-z]+)(\(.+\))?: .*/\1/' || echo "unknown")
+TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+AGENT_ID=${AGENT_ID:-"human-developer"}
+
+# Get list of modified files
+FILES_MODIFIED=$(git diff-tree --no-commit-id --name-only -r HEAD | tr '\n' ',' | sed 's/,$//')
+
+# Determine TDD phase based on commit type
+case "$COMMIT_TYPE" in
+    test)
+        TDD_PHASE="red"
+        ACTION="test_created"
+        ;;
+    feat)
+        TDD_PHASE="green"
+        ACTION="implementation_completed"
+        ;;
+    refactor)
+        TDD_PHASE="refactor"
+        ACTION="refactored"
+        ;;
+    fix)
+        TDD_PHASE="fix"
+        ACTION="bug_fixed"
+        ;;
+    *)
+        TDD_PHASE="other"
+        ACTION="committed"
+        ;;
+esac
+
+# Extract first line of commit message as details
+DETAILS=$(echo "$COMMIT_MSG" | head -n 1)
+
+# Append to development log
+LOG_ENTRY=$(cat <<EOF
+{"timestamp":"$TIMESTAMP","agent":"$AGENT_ID","action":"$ACTION","details":"$DETAILS","commit":"$COMMIT_HASH","files":"$FILES_MODIFIED","tdd_phase":"$TDD_PHASE"}
+EOF
+)
+
+echo "$LOG_ENTRY" >> .ai/artifacts/logs/development.jsonl
+
+# Provide next step reminder based on TDD phase
+case "$TDD_PHASE" in
+    red)
+        echo ""
+        echo "✅ Test committed (RED phase)"
+        echo "🔴 ➡️  🟢 Next: Write minimum code to make the test pass"
+        ;;
+    green)
+        echo ""
+        echo "✅ Implementation committed (GREEN phase)"
+        echo "🟢 ➡️  🔵 Next: Refactor to improve code quality (if needed)"
+        echo "Or: Start next feature with RED phase (write new failing test)"
+        ;;
+    refactor)
+        echo ""
+        echo "✅ Refactoring committed (REFACTOR phase)"
+        echo "🔵 ➡️  🔴 Next: Start new feature with RED phase (write failing test)"
+        ;;
+esac
+
+exit 0

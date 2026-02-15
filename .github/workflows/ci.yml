@@ -1,0 +1,45 @@
+name: ShiftSync CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./web-app
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js 18
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: web-app/package-lock.json
+        
+    - name: Install Dependencies
+      run: npm ci
+      
+    - name: Run ESLint
+      run: npm run lint
+      
+    - name: Run Unit Tests
+      run: npm run test
+      
+    - name: Build Application
+      run: npm run build
+      
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+      
+    - name: Run E2E Tests
+      run: npm run test:e2e
+      env:
+        CI: true

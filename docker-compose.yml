@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres:15-alpine
+    container_name: shiftsync-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shiftsync
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  # web:
+  #   build:
+  #     context: ./web-app
+  #     dockerfile: Dockerfile
+  #     target: runner # For production. Change to 'deps' or override command for dev.
+  #   container_name: shiftsync-web
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - DATABASE_URL=postgresql://postgres:postgres@db:5432/shiftsync?schema=public
+  #     - NEXTAUTH_SECRET=changeme_in_production
+  #     - NEXTAUTH_URL=http://localhost:3000
+  #   depends_on:
+  #     - db
+
+volumes:
+  postgres_data:
