@@ -1,0 +1,8 @@
+# Ignore lock file in .ai directory (transient state)
+artifacts/wip/locks.json
+
+# Ignore individual work session logs that are in progress
+artifacts/wip/session-*.md
+
+# Keep completed sessions, ADRs, and development log in version control
+# These provide valuable context for future agents
