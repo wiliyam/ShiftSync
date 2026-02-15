@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["darwin", "linux-arm64-openssl-3.0.x", "linux-arm64-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum ShiftStatus {
+  DRAFT
+  PUBLISHED
+  COMPLETED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Hashed
+  name      String?
+  role      Role     @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employee  Employee?
+}
+
+model Employee {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  skills    String[] // e.g. ["BARTENDER", "SERVER"]
+  maxHoursPerWeek Int @default(40)
+  
+  shifts    Shift[]
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  shifts    Shift[]
+}
+
+model Shift {
+  id        String   @id @default(cuid())
+  start     DateTime
+  end       DateTime
+  
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+  
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  
+  requiredSkills String[]
+  status         ShiftStatus @default(DRAFT)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
