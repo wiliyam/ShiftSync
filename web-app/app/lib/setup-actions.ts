@@ -1,10 +1,13 @@
 'use server';
 
 import { prisma } from '@/app/lib/prisma';
+// import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { Role } from '@prisma/client';
 import { redirect } from 'next/navigation';
+
+// const prisma = new PrismaClient();
 
 export async function checkUsersExist() {
     try {

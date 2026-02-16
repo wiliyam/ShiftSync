@@ -19,31 +19,10 @@ async function getUser(email: string) {
     }
 }
 
-export const { auth, signIn, signOut, handlers } = NextAuth({
-    pages: {
-        signIn: '/login',
-    },
-    callbacks: {
-        authorized({ auth, request: { nextUrl } }) {
-            const isLoggedIn = !!auth?.user;
-            const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-            const isOnAdmin = nextUrl.pathname.startsWith('/admin');
+import { authConfig } from './auth.config';
 
-            if (isOnDashboard || isOnAdmin) {
-                if (isLoggedIn) return true;
-                return false; // Redirect unauthenticated users to login page
-            }
-            return true;
-        },
-        async session({ session, token }) {
-            if (token.sub && session.user) {
-                session.user.id = token.sub;
-                // Add role to session if we want to use it on client
-                // This is a simplified example.
-            }
-            return session;
-        },
-    },
+export const { auth, signIn, signOut, handlers } = NextAuth({
+    ...authConfig,
     providers: [
         Credentials({
             async authorize(credentials) {

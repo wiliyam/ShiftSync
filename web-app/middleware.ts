@@ -3,9 +3,9 @@ import NextAuth from 'next-auth';
 // Note: In real production with Edge, we'd split auth.config.ts.
 // For simplicity in this Docker setup, we'll basic middleware.
 
-import { auth } from './auth';
+import { authConfig } from './auth.config';
 
-export default auth;
+export default NextAuth(authConfig).auth;
 
 export const config = {
     // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher

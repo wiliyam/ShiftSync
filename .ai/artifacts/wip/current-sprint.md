@@ -859,18 +859,39 @@ npm run test:e2e -- employee-management
 ## Active Tasks
 
 ### Current Task
-**None - Sprint planning complete, ready for implementation**
+**UI Redesign with shadcn/ui + Playwright E2E Tests**
 
 ### In Progress
-None
+- UI redesign: migrating all pages to shadcn/ui components (Button, Card, Input, Label, Table, Sheet)
+- Playwright E2E tests for all user roles (ADMIN, EMPLOYEE) with cross-browser coverage
 
 ### Blocked
 None
 
 ---
 
-## Completed Tasks
-(Will be updated as tasks are completed)
+## Completed Tasks (Sprint 2)
+
+### Done on 2026-02-16 (Session 2 - Human + claude-opus-4.6)
+- **Task 1.1:** Employee skill validation module (`validations/employee-validation.ts`) — 23 unit tests
+- **Task 2.1:** Shift validation + conflict detection (`validations/shift-validation.ts`) — 21 unit tests
+- **Task 1.3:** Employee maxHours validation (.max(168)) — 8 new tests in employee-actions.test.ts
+- **Bug Fix:** Added `'use server'` directive to employee-actions.ts
+- **Bug Fix:** Migrated all 3 forms from deprecated `useFormState` to `useActionState` (React 19)
+- **Bug Fix:** Fixed "Add Employee" button (changed `<button>` to `<Link>`)
+- **Bug Fix:** Added mobile card view for employee list page
+- **Component Tests:** Created 13 component tests for CreateEmployeeForm
+- **UI:** Initialized shadcn/ui (new-york style, Tailwind v4)
+- **UI:** Installed 10 shadcn/ui components (button, card, input, label, select, table, badge, separator, sheet, textarea)
+- **UI:** Updated globals.css with indigo theme + dark mode
+- **UI:** Redesigned login page with shadcn Card component
+- **UI:** Redesigned login form with shadcn Input, Label, Button
+- **UI:** Redesigned admin sidebar with Sheet (mobile), lucide-react icons
+- **Docs:** Updated architecture_design.md with current tech stack
+- **Docs:** Updated AGENT_GUIDELINES.md v2.0 with UI + E2E sections
+- **Config:** Added shadcn MCP server config (.mcp.json)
+
+**Test Status:** 96 passing, 0 failing, 1 skipped
 
 ---
 

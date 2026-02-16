@@ -13,12 +13,23 @@ jest.mock('@/app/ui/login-form', () => {
 describe('LoginPage', () => {
     it('renders the brand name', () => {
         render(<LoginPage />)
-        const heading = screen.getByText('ShiftSync')
-        expect(heading).toBeInTheDocument()
+        const headings = screen.getAllByText('ShiftSync')
+        expect(headings.length).toBeGreaterThan(0)
+        expect(headings[0]).toBeInTheDocument()
     })
 
-    it('renders the login prompt', () => {
+    it('renders the welcome heading', () => {
         render(<LoginPage />)
-        expect(screen.getByText('Please log in to continue.')).toBeInTheDocument()
+        expect(screen.getByText('Welcome Back')).toBeInTheDocument()
+    })
+
+    it('renders the sign in prompt', () => {
+        render(<LoginPage />)
+        expect(screen.getByText('Please sign in to your account')).toBeInTheDocument()
+    })
+
+    it('renders the login form', () => {
+        render(<LoginPage />)
+        expect(screen.getByTestId('login-form')).toBeInTheDocument()
     })
 })

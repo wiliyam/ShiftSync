@@ -8,7 +8,8 @@ export async function authenticate(
     formData: FormData,
 ) {
     try {
-        await signIn('credentials', formData);
+        const data = Object.fromEntries(formData.entries());
+        await signIn('credentials', data);
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {
