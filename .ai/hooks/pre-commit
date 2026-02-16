@@ -36,9 +36,9 @@ if [ -n "$SOURCE_FILES" ] && [ -z "$TEST_FILES" ]; then
     fi
 fi
 
-# Run tests
-echo "🏃 Running tests..."
-if ! npm test -- --passWithNoTests --silent 2>&1 | tail -20; then
+# Run tests with coverage in a single pass
+echo "🏃 Running tests with coverage..."
+if ! npm test -- --passWithNoTests --silent --coverage --coverageReporters=json-summary --coverageReporters=text-summary 2>&1 | tail -30; then
     echo -e "${RED}❌ Tests failed! Fix failing tests before committing.${NC}"
     echo ""
     echo "TDD Workflow:"
@@ -54,9 +54,6 @@ echo -e "${GREEN}✅ All tests passed!${NC}"
 # Check test coverage (only if there are test files)
 if [ -n "$TEST_FILES" ] || [ -n "$SOURCE_FILES" ]; then
     echo "📊 Checking test coverage..."
-
-    # Run coverage check
-    COVERAGE_OUTPUT=$(npm test -- --coverage --silent --coverageReporters=json-summary 2>&1 || true)
 
     if [ -f coverage/coverage-summary.json ]; then
         # Extract coverage percentages using node

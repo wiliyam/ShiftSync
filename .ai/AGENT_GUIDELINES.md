@@ -1,7 +1,7 @@
 # AI Agent Guidelines for ShiftSync Development
 
-**Version:** 1.0.0
-**Last Updated:** 2026-02-15
+**Version:** 2.0.0
+**Last Updated:** 2026-02-16
 **Purpose:** Define rules, protocols, and best practices for AI agents working on this codebase
 
 ---
@@ -163,7 +163,7 @@ Each line is a JSON object:
 
 **Required Fields:**
 - `timestamp`: ISO 8601 format
-- `agent`: Agent identifier (model name + version)
+- `agent`: Agent identifier (format: `antigravity-[model-name]`, e.g. `antigravity-gemini-2.0-pro`)
 - `action`: One of [test_created, test_passed, refactored, decision_made, blocked, completed]
 - `details`: Human-readable description
 - `file`: Affected file path (if applicable)
@@ -604,10 +604,105 @@ echo '{"timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","agent":"'$AGENT_ID'","act
 
 ---
 
+## UI Development Guidelines
+
+### Design System: shadcn/ui
+The project uses [shadcn/ui](https://ui.shadcn.com) for all UI components. **Do NOT use raw HTML elements** for buttons, inputs, labels, cards, tables, etc. Always use shadcn/ui components.
+
+#### MCP Server
+A shadcn/ui MCP server is configured in `.mcp.json`. Use it to:
+- **Browse** available components: ask about what components exist
+- **Search** for specific components: find the right component for a use case
+- **Install** new components: `npx shadcn@latest add <component>`
+
+#### Key Components & When to Use Them
+| Instead of... | Use... | Import |
+|---------------|--------|--------|
+| `<button>` | `<Button>` | `@/components/ui/button` |
+| `<input>` | `<Input>` | `@/components/ui/input` |
+| `<label>` | `<Label>` | `@/components/ui/label` |
+| `<select>` | `<Select>` | `@/components/ui/select` |
+| `<table>` | `<Table>` | `@/components/ui/table` |
+| `<textarea>` | `<Textarea>` | `@/components/ui/textarea` |
+| Custom card div | `<Card>` | `@/components/ui/card` |
+| Custom modal | `<Sheet>` or `<Dialog>` | `@/components/ui/sheet` |
+
+#### Icons
+Use **Lucide React** icons (NOT Heroicons):
+```typescript
+import { Home, Users, Calendar, MapPin } from 'lucide-react';
+```
+
+#### Styling Utility
+Use the `cn()` helper for conditional classes:
+```typescript
+import { cn } from '@/lib/utils';
+<div className={cn('base-class', isActive && 'active-class')} />
+```
+
+### Responsive Design Rules
+- **Mobile-first**: Start with mobile layout, add `md:` / `lg:` breakpoints
+- **Navigation**: Use `Sheet` (slide-out) on mobile, fixed sidebar on desktop
+- **Tables**: Use card layout on mobile (`md:hidden`), table on desktop (`hidden md:table`)
+- **Forms**: Full-width on mobile, `max-w-lg mx-auto` on desktop
+
+### React 19 / Next.js 16 Patterns
+- **Forms**: Use `useActionState()` from `'react'` (NOT `useFormState` from `'react-dom'`)
+- **Server Actions**: Must have `'use server'` directive at top of file
+- **Form Status**: Use `useFormStatus()` from `'react-dom'` for pending states
+- **Server Components**: Default for pages; add `'use client'` only when needed
+
+## E2E Testing Guidelines
+
+### Playwright Configuration
+- **Browsers**: Chromium, Mobile Chrome (Pixel 5), Mobile Safari (iPhone 12), Firefox
+- **Base URL**: `http://localhost:3000`
+- **Test Dir**: `web-app/e2e/`
+
+### User Roles for E2E Tests
+| Role | Email | Password | Redirect |
+|------|-------|----------|----------|
+| ADMIN | admin@shiftsync.com | password | /admin |
+| EMPLOYEE | (seed data) | password | /dashboard |
+
+### E2E Test Structure
+```typescript
+// Use auth fixtures for role-based tests
+import { test, expect } from '@playwright/test';
+
+// Admin tests
+test.describe('Admin: Employee Management', () => {
+    test.beforeEach(async ({ page }) => {
+        await page.goto('/login');
+        await page.getByLabel('Email').fill('admin@shiftsync.com');
+        await page.getByLabel('Password').fill('password');
+        await page.getByRole('button', { name: 'Log in' }).click();
+        await expect(page).toHaveURL(/\/admin/);
+    });
+
+    test('can create employee', async ({ page }) => {
+        // test implementation
+    });
+});
+```
+
+### E2E Test Files
+| File | Coverage |
+|------|----------|
+| `e2e/auth.spec.ts` | Login, logout, role-based redirects |
+| `e2e/admin-dashboard.spec.ts` | Dashboard stats, quick actions, sidebar |
+| `e2e/admin-employees.spec.ts` | CRUD operations, mobile responsiveness |
+| `e2e/admin-locations.spec.ts` | Location CRUD, empty state |
+| `e2e/admin-shifts.spec.ts` | Week view, shift creation |
+| `e2e/employee-dashboard.spec.ts` | Employee view, access control |
+
+---
+
 ## Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.0.0 | 2026-02-16 | Added UI guidelines (shadcn/ui, MCP server, responsive design), E2E testing guidelines, React 19 patterns |
 | 1.0.0 | 2026-02-15 | Initial guidelines established |
 
 ---

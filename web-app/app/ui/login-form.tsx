@@ -3,17 +3,18 @@
 import { useActionState } from 'react';
 import { authenticate } from '@/app/lib/actions';
 import { useFormStatus } from 'react-dom';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { AlertCircle } from 'lucide-react';
 
 function LoginButton() {
     const { pending } = useFormStatus();
 
     return (
-        <button
-            className="mt-4 w-full bg-primary text-primary-foreground rounded-md py-2 px-4 hover:opacity-90 transition-opacity disabled:opacity-50"
-            aria-disabled={pending}
-        >
+        <Button className="w-full" size="lg" disabled={pending}>
             {pending ? 'Logging in...' : 'Log in'}
-        </button>
+        </Button>
     );
 }
 
@@ -21,13 +22,10 @@ export default function LoginForm() {
     const [errorMessage, dispatch] = useActionState(authenticate, undefined);
 
     return (
-        <form action={dispatch} className="flex flex-col gap-4">
-            <div>
-                <label className="mb-2 block text-sm font-medium text-foreground" htmlFor="email">
-                    Email
-                </label>
-                <input
-                    className="block w-full rounded-md border border-input bg-background py-2 px-3 text-sm outline-2 placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
+        <form action={dispatch} className="flex flex-col gap-5">
+            <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
                     id="email"
                     type="email"
                     name="email"
@@ -35,12 +33,9 @@ export default function LoginForm() {
                     required
                 />
             </div>
-            <div>
-                <label className="mb-2 block text-sm font-medium text-foreground" htmlFor="password">
-                    Password
-                </label>
-                <input
-                    className="block w-full rounded-md border border-input bg-background py-2 px-3 text-sm outline-2 placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
+            <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
                     id="password"
                     type="password"
                     name="password"
@@ -49,13 +44,12 @@ export default function LoginForm() {
                     minLength={6}
                 />
             </div>
-            <div
-                className="flex h-8 items-end space-x-1"
-                aria-live="polite"
-                aria-atomic="true"
-            >
+            <div className="min-h-[44px]" aria-live="polite">
                 {errorMessage && (
-                    <p className="text-sm text-destructive">{errorMessage}</p>
+                    <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-lg">
+                        <AlertCircle className="size-4 shrink-0" />
+                        <p>{errorMessage}</p>
+                    </div>
                 )}
             </div>
             <LoginButton />

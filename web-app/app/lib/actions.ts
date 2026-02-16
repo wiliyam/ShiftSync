@@ -8,14 +8,22 @@ export async function authenticate(
     formData: FormData,
 ) {
     try {
-        await signIn('credentials', formData);
+        const data = Object.fromEntries(formData.entries());
+
+        if (!data.email || !data.password) {
+            return 'Please enter both email and password.';
+        }
+
+        await signIn('credentials', data);
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {
                 case 'CredentialsSignin':
-                    return 'Invalid credentials.';
+                    return 'Invalid email or password. Please try again.';
+                case 'AccessDenied':
+                    return 'Access denied. Your account may be disabled.';
                 default:
-                    return 'Something went wrong.';
+                    return 'Authentication failed. Please try again later.';
             }
         }
         throw error;

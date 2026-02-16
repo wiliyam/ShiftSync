@@ -24,6 +24,10 @@ export default defineConfig({
             name: 'Mobile Safari',
             use: { ...devices['iPhone 12'] },
         },
+        {
+            name: 'firefox',
+            use: { ...devices['Desktop Firefox'] },
+        },
     ],
     webServer: {
         command: 'npm run dev',
