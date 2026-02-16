@@ -1,4 +1,4 @@
-import { createEmployee, updateEmployee, deleteEmployee } from '@/app/lib/employee-actions';
+import { createEmployee, updateEmployee, deleteEmployee, fetchEmployees, fetchEmployeesPages, fetchActiveEmployees } from '@/app/lib/employee-actions';
 import { prisma } from '@/app/lib/prisma';
 
 // Mock bcrypt and next actions
@@ -21,6 +21,8 @@ jest.mock('@/app/lib/prisma', () => ({
         user: {
             delete: jest.fn(),
             update: jest.fn(),
+            findMany: jest.fn(),
+            count: jest.fn(),
         },
     },
 }));
@@ -54,6 +56,8 @@ describe('Employee Actions', () => {
         mockTx.user.findUnique.mockResolvedValue(null);
         (prisma.user.delete as jest.Mock).mockResolvedValue({});
         (prisma.user.update as jest.Mock).mockResolvedValue({});
+        (prisma.user.findMany as jest.Mock).mockResolvedValue([]);
+        (prisma.user.count as jest.Mock).mockResolvedValue(0);
     });
 
     describe('createEmployee', () => {
@@ -308,6 +312,94 @@ describe('Employee Actions', () => {
                 where: { userId: 'user-1' },
                 data: expect.objectContaining({ skills: ['React', 'Node', 'TypeScript'] })
             });
+        });
+    });
+
+    describe('fetchEmployees', () => {
+        it('returns employees from the database', async () => {
+            const mockEmployees = [
+                { id: 'u1', name: 'Alice', email: 'alice@test.com', employee: { maxHoursPerWeek: 40 } },
+                { id: 'u2', name: 'Bob', email: 'bob@test.com', employee: { maxHoursPerWeek: 30 } },
+            ];
+            (prisma.user.findMany as jest.Mock).mockResolvedValue(mockEmployees);
+
+            const result = await fetchEmployees('', 1);
+
+            expect(result).toEqual(mockEmployees);
+            expect(prisma.user.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    take: 10,
+                    skip: 0,
+                })
+            );
+        });
+
+        it('applies pagination offset correctly', async () => {
+            (prisma.user.findMany as jest.Mock).mockResolvedValue([]);
+
+            await fetchEmployees('', 3);
+
+            expect(prisma.user.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    skip: 20,
+                })
+            );
+        });
+
+        it('throws error on database failure', async () => {
+            (prisma.user.findMany as jest.Mock).mockRejectedValue(new Error('DB Error'));
+
+            await expect(fetchEmployees('', 1)).rejects.toThrow('Failed to fetch employees.');
+        });
+    });
+
+    describe('fetchEmployeesPages', () => {
+        it('returns correct number of pages', async () => {
+            (prisma.user.count as jest.Mock).mockResolvedValue(25);
+
+            const result = await fetchEmployeesPages('');
+
+            expect(result).toBe(3); // ceil(25/10)
+        });
+
+        it('returns 1 page when count is less than page size', async () => {
+            (prisma.user.count as jest.Mock).mockResolvedValue(5);
+
+            const result = await fetchEmployeesPages('');
+
+            expect(result).toBe(1);
+        });
+
+        it('throws error on database failure', async () => {
+            (prisma.user.count as jest.Mock).mockRejectedValue(new Error('DB Error'));
+
+            await expect(fetchEmployeesPages('')).rejects.toThrow('Failed to fetch total number of employees.');
+        });
+    });
+
+    describe('fetchActiveEmployees', () => {
+        it('returns active employees', async () => {
+            const mockEmployees = [
+                { id: 'u1', name: 'Alice', employee: { id: 'e1' } },
+            ];
+            (prisma.user.findMany as jest.Mock).mockResolvedValue(mockEmployees);
+
+            const result = await fetchActiveEmployees();
+
+            expect(result).toEqual(mockEmployees);
+            expect(prisma.user.findMany).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({
+                        employee: { isNot: null },
+                    }),
+                })
+            );
+        });
+
+        it('throws error on database failure', async () => {
+            (prisma.user.findMany as jest.Mock).mockRejectedValue(new Error('DB Error'));
+
+            await expect(fetchActiveEmployees()).rejects.toThrow('Failed to fetch active employees.');
         });
     });
 

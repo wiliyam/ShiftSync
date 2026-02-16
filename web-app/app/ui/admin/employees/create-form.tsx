@@ -2,6 +2,10 @@
 
 import { createEmployee, State } from '@/app/lib/employee-actions';
 import { useActionState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { AlertCircle } from 'lucide-react';
 
 export default function CreateEmployeeForm() {
     const initialState: State = { message: null, errors: {} };
@@ -9,15 +13,13 @@ export default function CreateEmployeeForm() {
 
     return (
         <form action={formAction} className="space-y-4 max-w-lg mx-auto p-6 bg-card rounded-xl shadow-md border border-border">
-            <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
-                    Full Name
-                </label>
-                <input
+            <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                    id="name"
                     type="text"
                     name="name"
                     required
-                    className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                     placeholder="John Doe"
                     aria-describedby="name-error"
                 />
@@ -27,15 +29,14 @@ export default function CreateEmployeeForm() {
                     ))}
                 </div>
             </div>
-            <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
-                    Email Address
-                </label>
-                <input
+
+            <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                    id="email"
                     type="email"
                     name="email"
                     required
-                    className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                     placeholder="john@example.com"
                     aria-describedby="email-error"
                 />
@@ -45,16 +46,15 @@ export default function CreateEmployeeForm() {
                     ))}
                 </div>
             </div>
-            <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
-                    Password
-                </label>
-                <input
+
+            <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                    id="password"
                     type="password"
                     name="password"
                     required
                     minLength={6}
-                    className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                     placeholder="******"
                     aria-describedby="password-error"
                 />
@@ -64,18 +64,17 @@ export default function CreateEmployeeForm() {
                     ))}
                 </div>
             </div>
-            <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
-                    Max Hours / Week
-                </label>
-                <input
+
+            <div className="space-y-2">
+                <Label htmlFor="maxHours">Max Hours / Week</Label>
+                <Input
+                    id="maxHours"
                     type="number"
                     name="maxHours"
                     required
                     defaultValue={40}
                     min={1}
                     max={168}
-                    className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                     aria-describedby="maxHours-error"
                 />
                 <div id="maxHours-error" aria-live="polite" aria-atomic="true">
@@ -86,18 +85,15 @@ export default function CreateEmployeeForm() {
             </div>
 
             {state.message && (
-                <div className="text-sm text-destructive bg-destructive/10 p-2 rounded-md">
+                <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     <p>{state.message}</p>
                 </div>
             )}
 
-            <button
-                type="submit"
-                disabled={isPending}
-                className="w-full rounded-md bg-primary py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
-            >
+            <Button type="submit" className="w-full" size="lg" disabled={isPending}>
                 {isPending ? 'Creating...' : 'Create Employee'}
-            </button>
+            </Button>
         </form>
     );
 }

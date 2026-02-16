@@ -2,9 +2,12 @@
 
 import { createShift } from '@/app/lib/shift-actions';
 import { useActionState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
-// We need to pass locations and employees as props since this is a client component
 export default function CreateShiftForm({
     locations,
     employees
@@ -16,14 +19,13 @@ export default function CreateShiftForm({
 
     return (
         <form action={formAction} className="space-y-4 max-w-lg mx-auto p-6 bg-card rounded-xl shadow-md border border-border">
-            <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
-                    Location
-                </label>
+            <div className="space-y-2">
+                <Label htmlFor="locationId">Location</Label>
                 <select
+                    id="locationId"
                     name="locationId"
                     required
-                    className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                     <option value="">Select a location</option>
                     {locations.map((loc) => (
@@ -34,13 +36,12 @@ export default function CreateShiftForm({
                 </select>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
-                    Employee (Optional)
-                </label>
+            <div className="space-y-2">
+                <Label htmlFor="employeeId">Employee (Optional)</Label>
                 <select
+                    id="employeeId"
                     name="employeeId"
-                    className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                     <option value="">Unassigned</option>
                     {employees.map((user) => (
@@ -52,50 +53,40 @@ export default function CreateShiftForm({
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-1">
-                        Start Time
-                    </label>
-                    <input
+                <div className="space-y-2">
+                    <Label htmlFor="start">Start Time</Label>
+                    <Input
+                        id="start"
                         type="datetime-local"
                         name="start"
                         required
-                        className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                     />
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-muted-foreground mb-1">
-                        End Time
-                    </label>
-                    <input
+                <div className="space-y-2">
+                    <Label htmlFor="end">End Time</Label>
+                    <Input
+                        id="end"
                         type="datetime-local"
                         name="end"
                         required
-                        className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                     />
                 </div>
             </div>
 
             {errorMessage && (
-                <div className="flex items-center space-x-2 text-sm text-destructive bg-destructive/10 p-2 rounded-md">
+                <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     <p>{errorMessage}</p>
                 </div>
             )}
 
             <div className="flex items-center gap-4 mt-6">
-                <Link
-                    href="/admin/shifts"
-                    className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-                >
-                    Cancel
-                </Link>
-                <button
-                    type="submit"
-                    disabled={isPending}
-                    className="flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-                >
+                <Button variant="outline" asChild>
+                    <Link href="/admin/shifts">Cancel</Link>
+                </Button>
+                <Button type="submit" disabled={isPending}>
                     {isPending ? 'Creating...' : 'Create Shift'}
-                </button>
+                </Button>
             </div>
         </form>
     );

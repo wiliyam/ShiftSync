@@ -44,12 +44,14 @@ export default function LoginForm() {
                     minLength={6}
                 />
             </div>
-            {errorMessage && (
-                <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-lg" aria-live="polite">
-                    <AlertCircle className="size-4 shrink-0" />
-                    <p>{errorMessage}</p>
-                </div>
-            )}
+            <div className="min-h-[44px]" aria-live="polite">
+                {errorMessage && (
+                    <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-lg">
+                        <AlertCircle className="size-4 shrink-0" />
+                        <p>{errorMessage}</p>
+                    </div>
+                )}
+            </div>
             <LoginButton />
         </form>
     );

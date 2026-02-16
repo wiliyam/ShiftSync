@@ -2,6 +2,11 @@
 
 import { createLocation } from '@/app/lib/location-actions';
 import { useActionState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CreateLocationForm() {
@@ -9,51 +14,43 @@ export default function CreateLocationForm() {
 
     return (
         <form action={formAction} className="space-y-4 max-w-lg mx-auto p-6 bg-card rounded-xl shadow-md border border-border">
-            <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
-                    Location Name
-                </label>
-                <input
+            <div className="space-y-2">
+                <Label htmlFor="name">Location Name</Label>
+                <Input
+                    id="name"
                     type="text"
                     name="name"
                     required
                     minLength={2}
-                    className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                     placeholder="Downtown Office"
                 />
             </div>
-            <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
-                    Address (Optional)
-                </label>
-                <textarea
+
+            <div className="space-y-2">
+                <Label htmlFor="address">Address (Optional)</Label>
+                <Textarea
+                    id="address"
                     name="address"
                     rows={3}
-                    className="w-full rounded-md border border-input bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring resize-none"
                     placeholder="123 Main St, City, Country"
+                    className="resize-none"
                 />
             </div>
 
             {errorMessage && (
-                <div className="flex items-center space-x-2 text-sm text-destructive bg-destructive/10 p-2 rounded-md">
+                <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     <p>{errorMessage}</p>
                 </div>
             )}
 
             <div className="flex items-center gap-4 mt-6">
-                <Link
-                    href="/admin/locations"
-                    className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-                >
-                    Cancel
-                </Link>
-                <button
-                    type="submit"
-                    disabled={isPending}
-                    className="flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-                >
+                <Button variant="outline" asChild>
+                    <Link href="/admin/locations">Cancel</Link>
+                </Button>
+                <Button type="submit" disabled={isPending}>
                     {isPending ? 'Creating...' : 'Create Location'}
-                </button>
+                </Button>
             </div>
         </form>
     );
